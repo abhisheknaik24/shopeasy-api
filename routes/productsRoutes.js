@@ -1,5 +1,6 @@
 import express from 'express';
 import productsController from '../controllers/productsController.js';
+import upload from '../middlewares/upload.js';
 
 const router = express.Router();
 
@@ -7,11 +8,17 @@ router.get('/getProduct/:id', productsController.getProduct);
 
 router.get('/getProducts', productsController.getProducts);
 
-router.post('/addProduct', productsController.addProduct);
+router.post(
+  '/addProduct',
+  upload.single('products'),
+  productsController.addProduct
+);
 
-router.post('/addProducts', productsController.addProducts);
-
-router.put('/updateProduct', productsController.updateProduct);
+router.put(
+  '/updateProduct',
+  upload.single('products'),
+  productsController.updateProduct
+);
 
 router.delete('/deleteProduct/:id', productsController.deleteProduct);
 

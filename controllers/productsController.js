@@ -45,20 +45,11 @@ const getProducts = async (req, res) => {
 
 const addProduct = async (req, res) => {
   if (req.method === 'POST') {
-    const {
-      image,
-      title,
-      desc,
-      price,
-      discount,
-      offers,
-      policies,
-      specs,
-      features,
-    } = req.body;
-    if ((image, title, desc, price, specs)) {
+    const { title, desc, price, discount, offers, policies, specs, features } =
+      req.body;
+    if ((req.file, title, desc, price, specs)) {
       let p = new Product({
-        image: image,
+        image: req.file.path,
         title: title,
         desc: desc,
         price: price,
@@ -88,50 +79,10 @@ const addProduct = async (req, res) => {
   }
 };
 
-const addProducts = async (req, res) => {
-  if (req.method === 'POST') {
-    if (req.body) {
-      for (let i of req.body) {
-        if ((i.image, i.title, i.desc, i.price, i.specs)) {
-          let p = new Product({
-            image: i.image,
-            title: i.title,
-            desc: i.desc,
-            price: i.price,
-            discount: i.discount,
-            offers: i.offers ? i.offers : [],
-            policies: i.policies ? i.policies : [],
-            specs: i.specs,
-            features: i.features ? i.features : [],
-          });
-          await p.save();
-        }
-      }
-      let products = await Product.find({ isActive: true });
-      res.status(200).json({
-        success: true,
-        message: 'Products added successfully!',
-        data: { products: products },
-      });
-    } else {
-      res.status(400).json({
-        success: false,
-        message: 'Request body is missing!',
-      });
-    }
-  } else {
-    res.status(400).json({
-      success: false,
-      message: 'Request method is not allowed!',
-    });
-  }
-};
-
 const updateProduct = async (req, res) => {
   if (req.method === 'PUT') {
     const {
       id,
-      image,
       title,
       desc,
       price,
@@ -141,11 +92,11 @@ const updateProduct = async (req, res) => {
       specs,
       features,
     } = req.body;
-    if ((id, image, title, desc, price, specs)) {
+    if ((id, req.file, image, title, desc, price, specs)) {
       let p = await Product.updateOne(
         { _id: id },
         {
-          image: image,
+          image: req.file.path,
           title: title,
           desc: desc,
           price: price,
@@ -204,7 +155,6 @@ export default {
   getProduct,
   getProducts,
   addProduct,
-  addProducts,
   updateProduct,
   deleteProduct,
 };
