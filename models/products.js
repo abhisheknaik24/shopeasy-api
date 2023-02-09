@@ -2,6 +2,7 @@ import { Schema, model } from 'mongoose';
 
 const productSchema = new Schema(
   {
+    image: { type: String, required: true },
     title: { type: String, maxLength: 255, required: true },
     desc: { type: String, maxLength: 500, required: true },
     price: { type: Schema.Types.Decimal128, required: true },

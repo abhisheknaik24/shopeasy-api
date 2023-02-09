@@ -26,7 +26,8 @@ const getOrder = async (req, res) => {
 
 const getOrders = async (req, res) => {
   if (req.method === 'GET') {
-    let orders = await Order.find({ isActive: true });
+    const { skip, limit } = req.query;
+    let orders = await Order.find({ isActive: true }).skip(skip).limit(limit);
     res.status(200).json({
       success: true,
       message: 'Orders fetched successfully!',

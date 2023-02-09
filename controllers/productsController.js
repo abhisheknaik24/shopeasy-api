@@ -26,7 +26,10 @@ const getProduct = async (req, res) => {
 
 const getProducts = async (req, res) => {
   if (req.method === 'GET') {
-    let products = await Product.find({ isActive: true });
+    const { skip, limit } = req.query;
+    let products = await Product.find({ isActive: true })
+      .skip(skip)
+      .limit(limit);
     res.status(200).json({
       success: true,
       message: 'Products fetched successfully!',
@@ -44,8 +47,9 @@ const addProduct = async (req, res) => {
   if (req.method === 'POST') {
     const { title, desc, price, discount, offers, policies, specs, features } =
       req.body;
-    if ((title, desc, price, specs)) {
+    if ((req.file, title, desc, price, specs)) {
       let p = new Product({
+        image: req.file.path,
         title: title,
         desc: desc,
         price: price,
@@ -75,44 +79,6 @@ const addProduct = async (req, res) => {
   }
 };
 
-const addProducts = async (req, res) => {
-  if (req.method === 'POST') {
-    if (req.body) {
-      for (let i of req.body) {
-        if ((i.title, i.desc, i.price, i.specs)) {
-          let p = new Product({
-            title: i.title,
-            desc: i.desc,
-            price: i.price,
-            discount: i.discount,
-            offers: i.offers ? i.offers : [],
-            policies: i.policies ? i.policies : [],
-            specs: i.specs,
-            features: i.features ? i.features : [],
-          });
-          await p.save();
-        }
-      }
-      let products = await Product.find({ isActive: true });
-      res.status(200).json({
-        success: true,
-        message: 'Products added successfully!',
-        data: { products: products },
-      });
-    } else {
-      res.status(400).json({
-        success: false,
-        message: 'Request body is missing!',
-      });
-    }
-  } else {
-    res.status(400).json({
-      success: false,
-      message: 'Request method is not allowed!',
-    });
-  }
-};
-
 const updateProduct = async (req, res) => {
   if (req.method === 'PUT') {
     const {
@@ -126,10 +92,11 @@ const updateProduct = async (req, res) => {
       specs,
       features,
     } = req.body;
-    if ((id, title, desc, price, specs)) {
+    if ((id, req.file, image, title, desc, price, specs)) {
       let p = await Product.updateOne(
         { _id: id },
         {
+          image: req.file.path,
           title: title,
           desc: desc,
           price: price,
@@ -188,7 +155,6 @@ export default {
   getProduct,
   getProducts,
   addProduct,
-  addProducts,
   updateProduct,
   deleteProduct,
 };
