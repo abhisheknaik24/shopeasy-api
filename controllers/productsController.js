@@ -45,6 +45,7 @@ const getProducts = async (req, res) => {
 
 const addProduct = async (req, res) => {
   if (req.method === 'POST') {
+    console.log(req.body);
     const { title, desc, price, discount, offers, policies, specs, features } =
       req.body;
     if ((req.file, title, desc, price, specs)) {
