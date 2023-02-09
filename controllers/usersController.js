@@ -27,7 +27,8 @@ const getUser = async (req, res) => {
 
 const getUsers = async (req, res) => {
   if (req.method === 'GET') {
-    let users = await User.find({ isActive: true });
+    const { skip, limit } = req.query;
+    let users = await User.find({ isActive: true }).skip(skip).limit(limit);
     res.status(200).json({
       success: true,
       message: 'Users fetched successfully!',
