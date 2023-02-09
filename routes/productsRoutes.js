@@ -10,13 +10,13 @@ router.get('/getProducts', productsController.getProducts);
 
 router.post(
   '/addProduct',
-  upload.single('products'),
+  upload.single('image'),
   productsController.addProduct
 );
 
 router.put(
   '/updateProduct',
-  upload.single('products'),
+  upload.single('image'),
   productsController.updateProduct
 );
 

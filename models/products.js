@@ -9,7 +9,7 @@ const productSchema = new Schema(
     discount: { type: Number, min: 0, max: 100, default: 0 },
     offers: [{ type: String, maxLength: 255 }],
     policies: [{ type: String, maxLength: 255 }],
-    specs: { type: Map, required: true },
+    specs: [{ type: Schema.Types.Mixed, required: true }],
     features: [{ type: String, maxLength: 255 }],
     ratings: { type: Number, min: 0, default: 0 },
     reviews: { type: Number, min: 0, default: 0 },

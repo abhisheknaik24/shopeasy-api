@@ -49,7 +49,7 @@ const addProduct = async (req, res) => {
       req.body;
     if ((req.file, title, desc, price, specs)) {
       let p = new Product({
-        image: req.file.path,
+        image: req.file.originalname,
         title: title,
         desc: desc,
         price: price,
@@ -96,7 +96,7 @@ const updateProduct = async (req, res) => {
       let p = await Product.updateOne(
         { _id: id },
         {
-          image: req.file.path,
+          image: req.file.originalname,
           title: title,
           desc: desc,
           price: price,
