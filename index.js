@@ -44,12 +44,8 @@ app.use('/api/orders', ordersRoutes);
         useUnifiedTopology: true,
       });
     }
-
-    app.listen(port, () =>
-      console.log(`Shopeasy app listening on http://localhost:${port}`)
-    );
+    app.listen(port);
   } catch (error) {
-    console.error(error);
     process.exit(1);
   }
 })();
