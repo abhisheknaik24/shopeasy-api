@@ -43,9 +43,38 @@ const getProducts = async (req, res) => {
   }
 };
 
+const filterProducts = async (req, res) => {
+  if (req.method === 'POST') {
+    const { skip, limit } = req.query;
+    const { maxPrice } = req.body;
+    if (maxPrice) {
+      let products = await Product.find({
+        price: { $lte: maxPrice },
+        isActive: true,
+      })
+        .skip(skip)
+        .limit(limit);
+      res.status(200).json({
+        success: true,
+        message: 'Products fetched successfully!',
+        data: { products: products },
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: 'Request body is missing!',
+      });
+    }
+  } else {
+    res.status(400).json({
+      success: false,
+      message: 'Request method is not allowed!',
+    });
+  }
+};
+
 const addProduct = async (req, res) => {
   if (req.method === 'POST') {
-    console.log(req.body);
     const { title, desc, price, discount, offers, policies, specs, features } =
       req.body;
     if ((req.file, title, desc, price, specs)) {
@@ -155,6 +184,7 @@ const deleteProduct = async (req, res) => {
 export default {
   getProduct,
   getProducts,
+  filterProducts,
   addProduct,
   updateProduct,
   deleteProduct,
