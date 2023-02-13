@@ -9,6 +9,8 @@ router.get('/getUsers', usersController.getUsers);
 
 router.post('/validateEmail', usersController.validateEmail);
 
-router.post('/addUser', usersController.addUser);
+router.post('/signIn', usersController.signIn);
+
+router.post('/signUp', usersController.signUp);
 
 export default router;

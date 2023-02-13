@@ -5,7 +5,7 @@ const getUser = async (req, res) => {
   if (req.method === 'GET') {
     const { email } = req.params;
     if (email) {
-      let user = await User.find({ email: email, isActive: true });
+      let user = await User.findOne({ email: email, isActive: true });
       res.status(200).json({
         success: true,
         message: 'User fetched successfully!',
@@ -127,29 +127,26 @@ const validateEmail = async (req, res) => {
   }
 };
 
-const addUser = async (req, res) => {
+const signIn = async (req, res) => {
   if (req.method === 'POST') {
-    const { firstName, lastName, email, password } = req.body;
-    if ((firstName, lastName, email, password)) {
-      let user = await User.exists({ email: email });
-      if (!user) {
-        let u = new User({
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-          password: password,
-        });
-        await u.save();
+    const { email, password } = req.body;
+    if ((email, password)) {
+      let user = await User.exists({
+        email: email,
+        password: password,
+        isActive: true,
+      });
+      if (user) {
+        let u = await User.findOne({ email: email, isActive: true });
         res.status(200).json({
           success: true,
-          message: 'User added successfully!',
+          message: 'User sign in successfully!',
           data: { user: u },
         });
       } else {
-        res.status(200).json({
+        res.status(400).json({
           success: false,
-          message: 'User already added!',
-          data: user,
+          message: 'User not sign up!',
         });
       }
     } else {
@@ -166,4 +163,42 @@ const addUser = async (req, res) => {
   }
 };
 
-export default { getUser, getUsers, validateEmail, addUser };
+const signUp = async (req, res) => {
+  if (req.method === 'POST') {
+    const { firstName, lastName, email, password } = req.body;
+    if ((firstName, lastName, email, password)) {
+      let user = await User.exists({ email: email, isActive: true });
+      if (!user) {
+        let u = new User({
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          password: password,
+        });
+        await u.save();
+        res.status(200).json({
+          success: true,
+          message: 'User sign up successfully!',
+          data: { user: u },
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: 'User already sign up!',
+        });
+      }
+    } else {
+      res.status(400).json({
+        success: false,
+        message: 'Request body is missing!',
+      });
+    }
+  } else {
+    res.status(400).json({
+      success: false,
+      message: 'Request method is not allowed!',
+    });
+  }
+};
+
+export default { getUser, getUsers, validateEmail, signIn, signUp };
