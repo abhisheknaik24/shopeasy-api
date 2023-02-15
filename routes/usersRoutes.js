@@ -13,4 +13,8 @@ router.post('/signIn', usersController.signIn);
 
 router.post('/signUp', usersController.signUp);
 
+router.post('/addAddress', usersController.addAddress);
+
+router.put('/updateAddress', usersController.updateAddress);
+
 export default router;

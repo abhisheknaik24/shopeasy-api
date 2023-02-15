@@ -1,4 +1,5 @@
 import Order from '../models/orders.js';
+import User from '../models/users.js';
 
 const getOrder = async (req, res) => {
   if (req.method === 'GET') {
@@ -43,13 +44,15 @@ const getOrders = async (req, res) => {
 
 const addOrder = async (req, res) => {
   if (req.method === 'POST') {
-    const { user, product, quantity, grandTotal } = req.body;
-    if ((user, product, quantity, grandTotal)) {
+    const { email, products, grandTotal, paymentOption, isPayment } = req.body;
+    if ((email, products, grandTotal)) {
+      let user = await User.findOne({ email: email });
       let o = new Order({
         user: user,
-        product: product,
-        quantity: quantity,
+        products: products,
         grandTotal: grandTotal,
+        paymentOption: paymentOption,
+        isPayment: isPayment,
       });
       await o.save();
       res.status(200).json({
