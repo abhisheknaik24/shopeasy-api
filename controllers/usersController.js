@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import bcrypt from 'bcrypt';
 import User from '../models/users.js';
 
 const getUser = async (req, res) => {
@@ -131,18 +132,22 @@ const signIn = async (req, res) => {
   if (req.method === 'POST') {
     const { email, password } = req.body;
     if ((email, password)) {
-      let user = await User.exists({
-        email: email,
-        password: password,
-        isActive: true,
-      });
+      let user = await User.exists({ email: email, isActive: true });
       if (user) {
-        let u = await User.findOne({ email: email, isActive: true });
-        res.status(200).json({
-          success: true,
-          message: 'User sign in successfully!',
-          data: { user: u },
-        });
+        let u = await User.findOne({ email: email });
+        let match = await bcrypt.compare(password, u.password);
+        if (match) {
+          res.status(200).json({
+            success: true,
+            message: 'User sign in successfully!',
+            data: { user: u },
+          });
+        } else {
+          res.status(400).json({
+            success: false,
+            message: 'Wrong password!',
+          });
+        }
       } else {
         res.status(400).json({
           success: false,
@@ -169,11 +174,13 @@ const signUp = async (req, res) => {
     if ((firstName, lastName, email, password)) {
       let user = await User.exists({ email: email, isActive: true });
       if (!user) {
+        let salt = await bcrypt.genSalt(10);
+        let hashPassword = await bcrypt.hash(password, salt);
         let u = new User({
           firstName: firstName,
           lastName: lastName,
           email: email,
-          password: password,
+          password: hashPassword,
         });
         await u.save();
         res.status(200).json({
@@ -201,4 +208,97 @@ const signUp = async (req, res) => {
   }
 };
 
-export default { getUser, getUsers, validateEmail, signIn, signUp };
+const addAddress = async (req, res) => {
+  if (req.method === 'POST') {
+    const { email, address } = req.body;
+    if ((email, address)) {
+      let user = await User.exists({ email: email, isActive: true });
+      if (user) {
+        let u = await User.findOne({ email: email, isActive: true });
+        if (u.addresses.length <= 0) {
+          await User.updateOne(
+            { email: email },
+            { $push: { addresses: { address: address, isSelected: true } } }
+          );
+        } else {
+          await User.updateOne(
+            { email: email },
+            { $push: { addresses: { address: address } } }
+          );
+        }
+        u = await User.findOne({ email: email, isActive: true });
+        res.status(200).json({
+          success: true,
+          message: 'Address added successfully!',
+          data: { user: u },
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: 'User not sign up!',
+        });
+      }
+    } else {
+      res.status(400).json({
+        success: false,
+        message: 'Request body is missing!',
+      });
+    }
+  } else {
+    res.status(400).json({
+      success: false,
+      message: 'Request method is not allowed!',
+    });
+  }
+};
+
+const updateAddress = async (req, res) => {
+  if (req.method === 'PUT') {
+    const { email, id } = req.body;
+    if ((email, id)) {
+      let user = await User.exists({ email: email, isActive: true });
+      if (user) {
+        let u = await User.findOne({ email: email, isActive: true });
+        u.addresses.filter((address) => {
+          if (address._id.toString() === id) {
+            return (address.isSelected = true);
+          } else {
+            return (address.isSelected = false);
+          }
+        });
+        await u.save();
+        u = await User.findOne({ email: email, isActive: true });
+        res.status(200).json({
+          success: true,
+          message: 'Address added successfully!',
+          data: { user: u },
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: 'User not sign up!',
+        });
+      }
+    } else {
+      res.status(400).json({
+        success: false,
+        message: 'Request body is missing!',
+      });
+    }
+  } else {
+    res.status(400).json({
+      success: false,
+      message: 'Request method is not allowed!',
+    });
+  }
+};
+
+export default {
+  getUser,
+  getUsers,
+  validateEmail,
+  signIn,
+  signUp,
+  addAddress,
+  updateAddress,
+};
